@@ -24,6 +24,54 @@
             overflow: hidden;
         }
 
+        /* --- INTRO / SPLASH SCREEN --- */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #05070a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 1;
+            transition: opacity 0.8s ease-out;
+        }
+
+        .intro-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: pulseLogo 2s infinite ease-in-out;
+        }
+
+        .loader-logo {
+            width: 150px;
+            max-width: 40vw;
+            height: auto;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+        }
+
+        .intro-text {
+            font-size: 1.15rem;
+            letter-spacing: 4px;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+
         #sidePanel {
             width: 220px;
             background: rgba(0, 0, 0, 0.4);
@@ -261,6 +309,14 @@
     </style>
 </head>
 <body>
+    <!-- INTRO SCREEN -->
+    <div id="intro-screen" class="intro-screen">
+        <div class="intro-content">
+            <img src="textures/AnB_GAMES.png" alt="AnB GAMES Logo" class="loader-logo">
+            <p class="intro-text">MADE BY AnB GAMES</p>
+        </div>
+    </div>
+
     <button id="creditsBtn" onclick="toggleCredits()" title="Credits" style="font-family: serif;">Credits</button>
 
     <div id="sidePanel" style="width: 220px; background: rgba(0, 0, 0, 0.4); border-right: 2px solid #34495e; height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column;">
@@ -504,6 +560,15 @@
         const player = { x: 260, y: 330, width: 80, height: 60 };
 
         window.onload = function() {
+            // Intro Animation Fade Out Logic
+            const introScreen = document.getElementById('intro-screen');
+            setTimeout(() => {
+                introScreen.classList.add('fade-out');
+                setTimeout(() => {
+                    introScreen.style.display = 'none';
+                }, 800);
+            }, 2000);
+
             displayLeaderboard();
             updateHighScoreDisplay();
         
@@ -785,33 +850,29 @@ function resetHearts() {
                 }
         
                 // Check for Game Over (Apple hit floor)  
-                // Check for Game Over (Apple hit floor)
-if (a.y > canvas.height) {
-    if (a.type === 'apple') {
-        // Reduce lives
-        lives--;
-        
-        // Find the "current" heart to flip to loss.png
-        // Easy: 3,2,1 | Medium: 3,2 | Hard: 3
-        const currentHeart = document.getElementById('heart' + (lives + (difficulty === 'medium' ? 2 : (difficulty === 'hard' ? 3 : 1))));
-        // Simpler approach: update the last visible heart that hasn't been lost
-        if (lives === 2) document.getElementById('heart1').src = lossImg;
-        else if (lives === 1) document.getElementById('heart2').src = lossImg;
-        else if (lives === 0) document.getElementById('heart3').src = lossImg;
+                if (a.y > canvas.height) {
+                    if (a.type === 'apple') {
+                        // Reduce lives
+                        lives--;
+                        
+                        // Find the "current" heart to flip to loss.png
+                        if (lives === 2) document.getElementById('heart1').src = lossImg;
+                        else if (lives === 1) document.getElementById('heart2').src = lossImg;
+                        else if (lives === 0) document.getElementById('heart3').src = lossImg;
 
-        if (lives <= 0) {
-            gameOverSound.currentTime = 0;
-            if (!isMuted) gameOverSound.play();
-            gameOver();
-            return;
-        }
-        
-        // Remove the missed apple so it doesn't trigger multiple life losses
-        apples.splice(i, 1);
-    } else {
-        apples.splice(i, 1);
-    }
-}
+                        if (lives <= 0) {
+                            gameOverSound.currentTime = 0;
+                            if (!isMuted) gameOverSound.play();
+                            gameOver();
+                            return;
+                        }
+                        
+                        // Remove the missed apple so it doesn't trigger multiple life losses
+                        apples.splice(i, 1);
+                    } else {
+                        apples.splice(i, 1);
+                    }
+                }
             }
         }
 
